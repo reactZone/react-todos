@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import { createStore, combineReducers } from "redux";
+import { PropTypes } from "prop-types";
 
 const todo = (state, action) => {
   switch (action.type) {
@@ -49,8 +50,6 @@ const todoApp = combineReducers({
   visibilityFilter //visibilityFilter: visibilityFilter
 });
 
-// const store = createStore(todoApp);
-
 const Link = ({ active, children, onClick }) => {
   if (active) {
     return <span>{children}</span>;
@@ -69,36 +68,6 @@ const Link = ({ active, children, onClick }) => {
   );
 };
 
-class FilterLink extends Component {
-  componentDidMount() {
-    const {store} = this.props;
-    this.unsubscribe = store.subscribe(() => this.forceUpdate());
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  render() {
-    const props = this.props; //What?
-    const {store} = props;
-    const state = store.getState(); //state?
-
-    return (
-      <Link
-        active={props.filter === state.visibilityFilter}
-        onClick={() =>
-          store.dispatch({
-            type: "SET_VISIBILITY_FILTER",
-            filter: props.filter
-          })}
-      >
-        {props.children}
-      </Link>
-    );
-  }
-}
-
 const getVisibleTodos = (todos, filter) => {
   switch (filter) {
     case "SHOW_ALL":
@@ -111,38 +80,6 @@ const getVisibleTodos = (todos, filter) => {
       return todos;
   }
 };
-
-class VisibleTodoList extends Component {
-
-  componentDidMount() {
-    const {store} = this.props;
-    this.unsubscribe = store.subscribe(() => this.forceUpdate());
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
-  }
-
-  render() {
-    const props = this.props;
-    const {store} = props;
-    const state = store.getState();
-
-    return (
-      <TodoList
-        todos={getVisibleTodos(
-          state.todos,
-          state.visibilityFilter //first filter the all todos, default visibility
-        )}
-        onTodoClick={id =>
-          store.dispatch({
-            type: "TOGGLE_TODO",
-            id
-          })}
-      />
-    );
-  }
-}
 
 const Todo = ({ completed, text, onClick }) => (
   <li
@@ -165,7 +102,7 @@ const TodoList = ({ todos, onTodoClick }) => {
   );
 };
 
-const AddTodo = ({store}) => {
+const AddTodo = (props, { store }) => {
   let input;
   return (
     <div>
@@ -190,31 +127,125 @@ const AddTodo = ({store}) => {
   );
 };
 
-const Footer = ({store}) => (
+AddTodo.contextTypes = {
+  store: PropTypes.object.isRequired
+};
+
+const Footer = () => (
   <p>
-    Show: <FilterLink store={store} filter="SHOW_ALL">All</FilterLink>{" "}
-    <FilterLink store={store} filter="SHOW_ACTIVE">Active</FilterLink>{" "}
-    <FilterLink store={store} filter="SHOW_COMPLETED">Complete</FilterLink>
+    Show:{" "}
+    <FilterLink  filter="SHOW_ALL">
+      All
+    </FilterLink>{" "}
+    <FilterLink  filter="SHOW_ACTIVE">
+      Active
+    </FilterLink>{" "}
+    <FilterLink  filter="SHOW_COMPLETED">
+      Complete
+    </FilterLink>
   </p>
 );
 
 let nextTodoId = 0;
 
-const TodoApp = ({store}) => (
-  <div>
-    <AddTodo store={store} />
-    <VisibleTodoList store={store} />
-    <Footer store={store} />
-  </div>
-);
-
+//what's context?
 class Provider extends Component {
+  getChildContext() {
+    // get the props from parent
+    return {
+      store: this.props.store
+    };
+  }
   render() {
     return this.props.children;
   }
 }
 
+//in order to get the context types
+Provider.childContextTypes = {
+  store: PropTypes.object.isRequired
+};
+
+class FilterLink extends Component {
+  componentDidMount() {
+    const { store } = this.context;
+    this.unsubscribe = store.subscribe(() => this.forceUpdate());
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props; //What?
+    const { store } = this.context;
+    const state = store.getState(); //state?
+
+    return (
+      <Link
+        active={props.filter === state.visibilityFilter}
+        onClick={() =>
+          store.dispatch({
+            type: "SET_VISIBILITY_FILTER",
+            filter: props.filter
+          })}
+      >
+        {props.children}
+      </Link>
+    );
+  }
+}
+
+FilterLink.contextTypes = {
+  store: PropTypes.object.isRequired
+};
+
+class VisibleTodoList extends Component {
+  componentDidMount() {
+    const { store } = this.context;
+    this.unsubscribe = store.subscribe(() => this.forceUpdate());
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props;
+    const { store } = this.context;
+    const state = store.getState();
+
+    return (
+      <TodoList
+        todos={getVisibleTodos(
+          state.todos,
+          state.visibilityFilter //first filter the all todos, default visibility
+        )}
+        onTodoClick={id =>
+          store.dispatch({
+            type: "TOGGLE_TODO",
+            id
+          })}
+      />
+    );
+  }
+}
+
+VisibleTodoList.contextTypes = {
+  store: PropTypes.object.isRequired
+};
+
+const TodoApp = () => (
+  <div>
+    <AddTodo />
+    <VisibleTodoList />
+    <Footer />
+  </div>
+);
+
 ReactDOM.render(
-  <TodoApp store={createStore(todoApp)} />,
+  <Provider store={createStore(todoApp)}>
+    <TodoApp />
+  </Provider>,
   document.getElementById("root")
 );
