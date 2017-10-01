@@ -48,7 +48,7 @@ const todoApp = combineReducers({
   visibilityFilter //visibilityFilter: visibilityFilter
 });
 
-const store = createStore(todoApp);
+// const store = createStore(todoApp);
 
 const Link = ({ active, children, onClick }) => {
   if (active) {
@@ -70,6 +70,7 @@ const Link = ({ active, children, onClick }) => {
 
 class FilterLink extends Component {
   componentDidMount() {
+    const {store} = this.props;
     this.unsubscribe = store.subscribe(() => this.forceUpdate());
   }
 
@@ -79,6 +80,7 @@ class FilterLink extends Component {
 
   render() {
     const props = this.props; //What?
+    const {store} = props;
     const state = store.getState(); //state?
 
     return (
@@ -112,6 +114,7 @@ const getVisibleTodos = (todos, filter) => {
 class VisibleTodoList extends Component {
 
   componentDidMount() {
+    const {store} = this.props;
     this.unsubscribe = store.subscribe(() => this.forceUpdate());
   }
 
@@ -121,6 +124,7 @@ class VisibleTodoList extends Component {
 
   render() {
     const props = this.props;
+    const {store} = props;
     const state = store.getState();
 
     return (
@@ -160,7 +164,7 @@ const TodoList = ({ todos, onTodoClick }) => {
   );
 };
 
-const AddTodo = () => {
+const AddTodo = ({store}) => {
   let input;
   return (
     <div>
@@ -185,22 +189,22 @@ const AddTodo = () => {
   );
 };
 
-const Footer = () => (
+const Footer = ({store}) => (
   <p>
-    Show: <FilterLink filter="SHOW_ALL">All</FilterLink>{" "}
-    <FilterLink filter="SHOW_ACTIVE">Active</FilterLink>{" "}
-    <FilterLink filter="SHOW_COMPLETED">Complete</FilterLink>
+    Show: <FilterLink store={store} filter="SHOW_ALL">All</FilterLink>{" "}
+    <FilterLink store={store} filter="SHOW_ACTIVE">Active</FilterLink>{" "}
+    <FilterLink store={store} filter="SHOW_COMPLETED">Complete</FilterLink>
   </p>
 );
 
 let nextTodoId = 0;
 
-const TodoApp = () => (
+const TodoApp = ({store}) => (
   <div>
-    <AddTodo />
-    <VisibleTodoList />
-    <Footer />
+    <AddTodo store={store} />
+    <VisibleTodoList store={store} />
+    <Footer store={store} />
   </div>
 );
 
-export default TodoApp;
+export {TodoApp, todoApp}
