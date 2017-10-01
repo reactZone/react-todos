@@ -105,9 +105,39 @@ const getVisibleTodos = (todos, filter) => {
     case "SHOW_ACTIVE":
       return todos.filter(todo => !todo.completed);
     default:
-    return todos;
+      return todos;
   }
 };
+
+class VisibleTodoList extends Component {
+
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => this.forceUpdate());
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  render() {
+    const props = this.props;
+    const state = store.getState();
+
+    return (
+      <TodoList
+        todos={getVisibleTodos(
+          state.todos,
+          state.visibilityFilter //first filter the all todos, default visibility
+        )}
+        onTodoClick={id =>
+          store.dispatch({
+            type: "TOGGLE_TODO",
+            id
+          })}
+      />
+    );
+  }
+}
 
 const Todo = ({ completed, text, onClick }) => (
   <li
@@ -130,7 +160,7 @@ const TodoList = ({ todos, onTodoClick }) => {
   );
 };
 
-const AddTodo = ({ onAddClick }) => {
+const AddTodo = () => {
   let input;
   return (
     <div>
@@ -141,7 +171,11 @@ const AddTodo = ({ onAddClick }) => {
       />
       <button
         onClick={() => {
-          onAddClick(input.value);
+          store.dispatch({
+            type: "ADD_TODO",
+            id: nextTodoId++,
+            text: input.value
+          });
           input.value = "";
         }}
       >
@@ -161,31 +195,12 @@ const Footer = () => (
 
 let nextTodoId = 0;
 
-const TodoApp = ({todos, visibilityFilter}) => (
+const TodoApp = () => (
   <div>
-    <AddTodo
-      onAddClick={text => {
-        store.dispatch({
-          type: "ADD_TODO",
-          id: nextTodoId++,
-          text
-        });
-      }}
-    />
-
-    <TodoList
-      todos={getVisibleTodos(
-        todos,
-        visibilityFilter //first filter the all todos, default visibility
-      )}
-      onTodoClick={id =>
-        store.dispatch({
-          type: "TOGGLE_TODO",
-          id
-        })}
-    />
+    <AddTodo />
+    <VisibleTodoList />
     <Footer />
   </div>
 );
 
-export { TodoApp, store };
+export default TodoApp;
