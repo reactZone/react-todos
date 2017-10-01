@@ -207,4 +207,10 @@ const TodoApp = ({store}) => (
   </div>
 );
 
+class Provider extends Component {
+  render() {
+    return this.props.children;
+  }
+}
+
 export {TodoApp, todoApp}
