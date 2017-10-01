@@ -2,6 +2,7 @@ import ReactDOM from "react-dom";
 import React, { Component } from "react";
 import { createStore, combineReducers } from "redux";
 import { PropTypes } from "prop-types";
+import { Provider } from "react-redux";
 
 const todo = (state, action) => {
   switch (action.type) {
@@ -126,45 +127,19 @@ const AddTodo = (props, { store }) => {
     </div>
   );
 };
-
 AddTodo.contextTypes = {
   store: PropTypes.object.isRequired
 };
 
 const Footer = () => (
   <p>
-    Show:{" "}
-    <FilterLink  filter="SHOW_ALL">
-      All
-    </FilterLink>{" "}
-    <FilterLink  filter="SHOW_ACTIVE">
-      Active
-    </FilterLink>{" "}
-    <FilterLink  filter="SHOW_COMPLETED">
-      Complete
-    </FilterLink>
+    Show: <FilterLink filter="SHOW_ALL">All</FilterLink>{" "}
+    <FilterLink filter="SHOW_ACTIVE">Active</FilterLink>{" "}
+    <FilterLink filter="SHOW_COMPLETED">Complete</FilterLink>
   </p>
 );
 
 let nextTodoId = 0;
-
-//what's context?
-class Provider extends Component {
-  getChildContext() {
-    // get the props from parent
-    return {
-      store: this.props.store
-    };
-  }
-  render() {
-    return this.props.children;
-  }
-}
-
-//in order to get the context types
-Provider.childContextTypes = {
-  store: PropTypes.object.isRequired
-};
 
 class FilterLink extends Component {
   componentDidMount() {
@@ -195,7 +170,6 @@ class FilterLink extends Component {
     );
   }
 }
-
 FilterLink.contextTypes = {
   store: PropTypes.object.isRequired
 };
@@ -230,7 +204,6 @@ class VisibleTodoList extends Component {
     );
   }
 }
-
 VisibleTodoList.contextTypes = {
   store: PropTypes.object.isRequired
 };
