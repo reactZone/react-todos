@@ -1,19 +1,19 @@
-
-webpacck = require('webpack');
-var path = require('path');
+webpacck = require("webpack");
+var path = require("path");
 module.exports = {
-  entry: path.resolve(__dirname, 'app'),
+  entry: path.resolve(__dirname, "app"),
   output: {
-      path: __dirname + '/dist',
-      publicPath: '/',
-      filename: 'bundle.js'
-    },
+    path: __dirname + "/dist",
+    publicPath: "/",
+    filename: "bundle.js"
+  },
+  devtool: 'cheap-eval-source-map',  
   devServer: {
-      contentBase: path.resolve(__dirname, 'public')
-    },
+    contentBase: path.resolve(__dirname, "public")
+  },
   module: {
-      loaders: [
-            {test: /\.js$/, exclude: /node_modules/, loaders: ['babel-loader']},
-          ]
-    }
+    loaders: [
+      { test: /\.js$/, exclude: /node_modules/, loaders: ["babel-loader"] }
+    ]
+  }
 };
