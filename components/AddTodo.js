@@ -4,11 +4,22 @@ import { addTodo } from "../actions";
 
 let AddTodo = ({ dispatch }) => {
   let input;
+
+  let enterToAddTodo = () => {
+    input.value && dispatch(addTodo(input.value));
+    input.value = "";
+  };
+
   return (
     <div>
       <input
         ref={node => {
           input = node;
+        }}
+        onKeyUp={e => {
+          if (e.which === 13) {
+            enterToAddTodo(e);
+          }
         }}
       />
       <button
@@ -23,4 +34,4 @@ let AddTodo = ({ dispatch }) => {
   );
 };
 
-export default AddTodo = connect()(AddTodo); //only one props
+export default (AddTodo = connect()(AddTodo)); //only one props
