@@ -24,8 +24,7 @@ let AddTodo = ({ dispatch }) => {
       />
       <button
         onClick={() => {
-          input.value && dispatch(addTodo(input.value));
-          input.value = "";
+          enterToAddTodo();
         }}
       >
         Add Todo
