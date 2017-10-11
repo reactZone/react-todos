@@ -14,4 +14,4 @@ npm i
 ```bash
 npm run start
 ```
-3. Navigate to `localhost:3000`
+3. Navigate to `localhost:8080`
