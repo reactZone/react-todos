@@ -18,7 +18,7 @@ let AddTodo = ({ dispatch }) => {
         }}
         onKeyUp={e => {
           if (e.which === 13) {
-            enterToAddTodo(e);
+            enterToAddTodo();
           }
         }}
       />
