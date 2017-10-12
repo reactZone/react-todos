@@ -1,27 +1,12 @@
 import React from 'react';
-import { Link } from "./Link";
-import { setVisibilityFilter} from '../actions';
-import {connect} from 'react-redux';
-
-const mapStateToLinkProps = (state, ownProps) => {
-  return {
-    active: ownProps.filter === state.visibilityFilter
-  };
-};
-
-const mapDispatchLinkProps = (dispatch, ownProps) => {
-  return {
-    onClick: () => dispatch(setVisibilityFilter(ownProps.filter))
-  };
-};
-
-const FilterLink = connect(mapStateToLinkProps, mapDispatchLinkProps)(Link);
+import FilterLink from './FilterLink';
+import FilterLink2 from './FilterLink2';
 
 const Footer = () => (
   <p>
-    Show: <FilterLink filter="SHOW_ALL">All</FilterLink>{" "}
-    <FilterLink filter="SHOW_ACTIVE">Active</FilterLink>{" "}
-    <FilterLink filter="SHOW_COMPLETED">Complete</FilterLink>
+    Show: <FilterLink2 filter="all">All</FilterLink2>{" "}
+    <FilterLink2 filter="active">Active</FilterLink2>{" "}
+    <FilterLink2 filter="completed">Complete</FilterLink2>
   </p>
 );
 
