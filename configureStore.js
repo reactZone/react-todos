@@ -1,12 +1,17 @@
-import { createStore } from "redux";
+import { applyMiddleware, createStore } from "redux";
 import rooterReducer from "./reducers";
 import { loadState, saveState } from "./localStore";
+import logger from 'redux-logger';
 import throttle from "lodash/throttle";
 
 const configureStore = () => {
   const persistedState = loadState();
 
-  const store = createStore(rooterReducer, persistedState);
+  const store = createStore(
+    rooterReducer,
+    persistedState,
+    applyMiddleware(logger)
+  );
 
   store.subscribe(
     throttle(() => {
